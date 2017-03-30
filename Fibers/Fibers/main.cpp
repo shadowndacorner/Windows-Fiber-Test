@@ -21,10 +21,6 @@ void thread_func(int threadid)
 		{
 			std::cout << "ERROR!  Thread " << threadid << " running on processor " << aff << "!\n";
 		}
-		else
-		{
-			std::cout << "Thread " << threadid << "\n";
-		}
 		std::this_thread::yield();
 	}
 }
