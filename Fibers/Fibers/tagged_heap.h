@@ -5,6 +5,7 @@
 #include <queue>
 #include <mutex>
 
+#define FLIB_HEAP_BLOCK_SIZE (2*1024*1024)
 namespace flib
 {
 	class tagged_heap

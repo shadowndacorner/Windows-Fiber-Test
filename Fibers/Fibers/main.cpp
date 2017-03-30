@@ -1,27 +1,53 @@
 #include <iostream>
 #include "thread_pool.h"
-#include "tagged_heap.h"
+#include "tagged_linear_allocator.h"
 
 int main(int argc, char** argv, char** env)
 {
-	flib::tagged_heap& heap = flib::shared_heap;
 	flib::thread_pool pool;
 	char f[512];
 	std::cin.getline(f, 512);
 	std::cout << "Exiting...\n";
 
-	heap.alloc_block(1);
-	heap.alloc_block(1);
-	heap.alloc_block(2);
-	heap.alloc_block(1);
-	heap.alloc_block(3);
-	heap.alloc_block(1);
-	heap.free(1);
-	heap.alloc_block(2);
-	heap.alloc_block(2);
-	heap.alloc_block(3);
-	heap.alloc_block(1);
-	heap.alloc_block(2);
-	heap.alloc_block(3);
-	heap.alloc_block(3);
+	struct allocTest
+	{
+		union
+		{
+			char arr[512];
+			double d;
+			float f;
+			int num;
+			char c;
+		};
+	};
+
+
+	flib::tagged_linear_allocator<allocTest, 10> alloc;
+	flib::tagged_linear_allocator<allocTest, 11> allocb;
+	flib::tagged_linear_allocator<allocTest, 10> allocc;
+	flib::tagged_linear_allocator<allocTest, 12> allocd;
+	for (int i = 0; i < 1000000; ++i)
+	{
+		auto test = alloc.allocate();
+	}
+
+	for (int i = 0; i < 10000000; ++i)
+	{
+		auto test = allocb.allocate();
+	}
+
+	flib::shared_heap.free(11);
+	for (int i = 0; i < 10000000; ++i)
+	{
+		auto test = allocc.allocate();
+	}
+	flib::shared_heap.free(10);
+
+	for (int i = 0; i < 10000000; ++i)
+	{
+		auto test = allocd.allocate();
+	}
+
+	auto& heap = flib::shared_heap;
+	printf("done!\n");
 }

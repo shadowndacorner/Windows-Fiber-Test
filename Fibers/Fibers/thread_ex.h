@@ -12,7 +12,10 @@
 static int set_thread_affinity(std::thread& thr, const int& core)
 {
 #ifdef _WIN32
-	return (int)SetThreadAffinityMask((HANDLE)thr.native_handle(), (1 << core));
+	if (sizeof(int) != sizeof(void*))
+		return (int)SetThreadAffinityMask((HANDLE)thr.native_handle(), (1i64 << core));
+	else
+		return (int)SetThreadAffinityMask((HANDLE)thr.native_handle(), (1 << core));
 #else
 	cpu_set_t cpuset;
 	CPU_ZERO(&cpuset);
