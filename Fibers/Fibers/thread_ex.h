@@ -27,6 +27,6 @@ static int get_current_processor()
 #ifdef _WIN32
 	return GetCurrentProcessorNumber();
 #else
-	return sched_getcpu();
+	return sched_getcpu() + 1;
 #endif
 }
