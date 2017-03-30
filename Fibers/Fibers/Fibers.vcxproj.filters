@@ -21,12 +21,30 @@
     <ClInclude Include="thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="frame_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tagged_heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tagged_linear_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="task_scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="thread_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tagged_heap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

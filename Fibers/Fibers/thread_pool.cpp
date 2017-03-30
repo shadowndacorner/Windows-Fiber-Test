@@ -27,30 +27,24 @@ void flib::thread_pool::initialize(const int& num_threads)
 	m_running = true;
 	for (int i = 0; i < num_threads; ++i)
 	{
-		auto func = [this, i] {
-			++m_activeThreads;
-			while (get_current_processor() != i) { std::this_thread::yield(); }
-
-			std::cout << "Thread " << i << " initialized\n";
-			while (m_running)
-			{
-				// do work
-				auto aff = get_current_processor();
-				if (aff != i)
-				{
-					std::cout << "ERROR!  Thread " << i << " running on processor " << aff << "!\n";
-				}
-				std::this_thread::yield();
-			}
-
-			printf("Thread %d finished\n", i);
-		};
-
-		m_threads.push_back(thread(func));
+		m_threads.push_back(thread(flib::thread_func, this, i));
 
 		thread& thr = m_threads.back();
-		set_thread_affinity(thr, i);
 	}
-
 	while (m_activeThreads < num_threads) { std::this_thread::yield(); }
+}
+
+void flib::thread_func(flib::thread_pool* m_pool, const int threadid)
+{
+	++m_pool->m_activeThreads;
+	set_this_thread_affinity(threadid);
+	// Wait until we're on the correct thread
+	while (get_current_processor() != threadid) { std::this_thread::yield(); }
+	while (m_pool->m_running)
+	{
+		// find a job
+		// do a job
+		// profit
+	}
+	--m_pool->m_activeThreads;
 }

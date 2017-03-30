@@ -19,11 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="task_scheduler.h" />
+    <ClInclude Include="frame_data.h" />
+    <ClInclude Include="tagged_heap.h" />
+    <ClInclude Include="tagged_linear_allocator.h" />
+    <ClInclude Include="Task.h" />
     <ClInclude Include="thread_ex.h" />
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tagged_heap.cpp" />
     <ClCompile Include="thread_pool.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -77,13 +83,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Development\boost_1_63_0</IncludePath>
+    <LibraryPath>C:\Development\boost_1_63_0\build\boost\bin.v2\libs\context\build\msvc-14.0\$(Configuration)\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\release\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\debug\link-static\threading-multi;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Development\boost_1_63_0</IncludePath>
+    <LibraryPath>C:\Development\boost_1_63_0\build\boost\bin.v2\libs\context\build\msvc-14.0\$(Configuration)\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\release\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\debug\link-static\threading-multi;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>libboost_context-vc140-mt-gd-1_63.lib;libboost_coroutine-vc140-mt-1_63.lib;libboost_coroutine-vc140-mt-gd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -103,6 +119,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libboost_context-vc140-mt-gd-1_63.lib;libboost_coroutine-vc140-mt-1_63.lib;libboost_coroutine-vc140-mt-gd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
