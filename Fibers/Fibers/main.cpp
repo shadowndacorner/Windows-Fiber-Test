@@ -1,18 +1,22 @@
 #include "thread_ex.h"
 #include <iostream>
 #include <vector>
+#include <atomic>
 
 static bool running = true;
+std::atomic_int thread_cnt;
 
 void thread_func(int threadid)
 {
 	// Wait until the thread affinity was successfully set
 	while (get_current_processor() != threadid)
 	{
-		std::cout << "Yielding thread " << threadid << " until get processor (currently on "<<get_current_processor()<<")\n";
+		//std::cout << "Yielding thread " << threadid << " until get processor (currently on " << get_current_processor() << ")\n";
 		std::this_thread::yield();
 	}
 
+
+	++thread_cnt;
 	std::cout << "Running thread " << threadid << "\n";
 	while (running)
 	{
@@ -21,6 +25,8 @@ void thread_func(int threadid)
 		{
 			std::cout << "ERROR!  Thread " << threadid << " running on processor " << aff << "!\n";
 		}
+		//else if (threadid == 0)
+		//std::cout << "Threads: " << thread_cnt << "\n";
 		std::this_thread::yield();
 	}
 }
@@ -36,11 +42,11 @@ int main(int argc, char** argv, char** env)
 		thread& thr = thrds.back();
 		set_thread_affinity(thr, i);
 	}
-	
+
 	std::cout << "All threads initialized, running...\n";
 	char f[512];
 	std::cin.getline(f, 512);
-	
+
 	running = false;
 	for (auto x = thrds.begin(); x < thrds.end(); ++x)
 	{
