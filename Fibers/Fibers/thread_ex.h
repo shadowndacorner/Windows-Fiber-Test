@@ -15,7 +15,7 @@ static int set_thread_affinity(std::thread& thr, const int& core)
 #else
 	cpu_set_t cpuset;
 	CPU_ZERO(&cpuset);
-	CPU_SET(core_id, &cpuset);
+	CPU_SET(core, &cpuset);
 
 	pthread_t current_thread = pthread_self();
 	return (int)pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
