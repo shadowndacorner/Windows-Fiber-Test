@@ -29,13 +29,15 @@ int main(int argc, char** argv, char** env)
 {
 	using namespace std;
 	vector<thread> thrds;
+	std::cout << "Initializing...\n";
 	for (unsigned int i = 0; i < thread::hardware_concurrency(); ++i)
 	{
 		thrds.push_back(thread(thread_func, i));
 		thread& thr = thrds.back();
 		set_thread_affinity(thr, i);
 	}
-
+	
+	std::cout << "All threads initialized, running...\n";
 	char f[512];
 	std::cin.getline(f, 512);
 	
