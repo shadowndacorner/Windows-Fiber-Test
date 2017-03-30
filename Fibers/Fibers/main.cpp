@@ -10,6 +10,7 @@ void thread_func(int threadid)
 	while (get_current_processor() != threadid)
 		std::this_thread::yield();
 
+	std::cout << "Running thread " << threadid << "\n";
 	while (running)
 	{
 		auto aff = get_current_processor();
