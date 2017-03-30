@@ -1,11 +1,7 @@
 #pragma once
 #include <vector>
 #include <thread>
-#ifdef _WIN32
 #include <atomic>
-#else
-#include <cstdatomic>
-#endif
 
 namespace flib
 {

@@ -42,7 +42,8 @@ void flib::thread_pool::initialize(const int& num_threads)
 				}
 				std::this_thread::yield();
 			}
-			std::cout << "Thread " << i << " finished\n";
+
+			printf("Thread %d finished\n", i);
 		};
 
 		m_threads.push_back(thread(func));
@@ -51,5 +52,5 @@ void flib::thread_pool::initialize(const int& num_threads)
 		set_thread_affinity(thr, i);
 	}
 
-	while (num_threads < m_activeThreads) { std::this_thread::yield(); }
+	while (m_activeThreads < num_threads) { std::this_thread::yield(); }
 }
