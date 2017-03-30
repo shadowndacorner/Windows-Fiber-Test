@@ -25,7 +25,7 @@ void flib::thread_pool::initialize(const int& num_threads)
 {
 	using namespace std;
 	m_running = true;
-	for (unsigned int i = 0; i < num_threads; ++i)
+	for (int i = 0; i < num_threads; ++i)
 	{
 		auto func = [this, i] {
 			++m_activeThreads;

@@ -1,7 +1,11 @@
 #pragma once
 #include <vector>
 #include <thread>
+#ifdef _WIN32
 #include <atomic>
+#else
+#include <cstdatomic>
+#endif
 
 namespace flib
 {
@@ -14,7 +18,7 @@ namespace flib
 	private:
 		void initialize(const int& threadCount);
 		std::vector<std::thread> m_threads;
-		std::atomic_uint16_t m_activeThreads;
+		std::atomic_ushort m_activeThreads;
 		bool m_running;
 	};
 }
