@@ -5,7 +5,7 @@
 #include <Windows.h>
 #else
 #include <pthread.h>
-#include <utmpx.h>
+#include <sched.h>
 #endif
 
 static int set_thread_affinity(std::thread& thr, const int& core)

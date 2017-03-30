@@ -8,7 +8,10 @@ void thread_func(int threadid)
 {
 	// Wait until the thread affinity was successfully set
 	while (get_current_processor() != threadid)
+	{
+		std::cout << "Yielding thread " << threadid << " until get processor\n";
 		std::this_thread::yield();
+	}
 
 	std::cout << "Running thread " << threadid << "\n";
 	while (running)
