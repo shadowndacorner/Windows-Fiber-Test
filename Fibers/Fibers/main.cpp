@@ -1,17 +1,14 @@
 #include "thread_ex.h"
-#include <chrono>
 #include <iostream>
 #include <vector>
 
-using namespace std::chrono_literals;
 static bool running = true;
 
 void thread_func(int threadid)
 {
 	// Wait until the thread affinity was successfully set
-	using namespace std::chrono_literals;
 	while (get_current_processor() != threadid)
-		std::this_thread::sleep_for(10ms);
+		std::this_thread::yield();
 
 	while (running)
 	{
