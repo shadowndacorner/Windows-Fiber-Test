@@ -17,11 +17,15 @@ void thread_func(int threadid)
 		{
 			std::cout << "ERROR!  Thread " << threadid << " running on processor " << aff << "!\n";
 		}
+		else
+		{
+			std::cout << "Thread " << threadid << "\n";
+		}
 		std::this_thread::yield();
 	}
 }
 
-int main()
+int main(int argc, char** argv, char** env)
 {
 	using namespace std;
 	vector<thread> thrds;
