@@ -32,7 +32,7 @@ char* flib::tagged_heap::alloc_block(const uint64_t& key)
 	}
 
 	if (allocated_blocks.count(key) == 0)
-		allocated_blocks.insert_or_assign(key, std::vector<char*>());
+		allocated_blocks[key] = std::vector<char*>();
 
 	allocated_blocks[key].push_back(ptr);
 	return ptr;

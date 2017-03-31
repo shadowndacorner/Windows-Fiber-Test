@@ -7,8 +7,6 @@ int main(int argc, char** argv, char** env)
 	flib::thread_pool pool;
 	char f[512];
 	std::cin.getline(f, 512);
-	std::cout << "Exiting...\n";
-
 	struct allocTest
 	{
 		union
@@ -21,14 +19,16 @@ int main(int argc, char** argv, char** env)
 		};
 	};
 
-	std::atomic_ushort count = 5;
+	std::atomic_ushort count;
+	count = 5;
 	for (int i = 0; i < 5; ++i)
 	{
 		pool.post_job([i, &count]{
 			flib::tagged_linear_allocator<allocTest> alloc(10 + i % 2);
-			for (int i = 0; i < 10000000; ++i)
+			for (int i = 0; i < 100; ++i)
 			{
 				alloc.allocate();
+				//print.f("Allocate from job %d\n", i);
 			}
 
 			printf("Thread %d done\n", i);

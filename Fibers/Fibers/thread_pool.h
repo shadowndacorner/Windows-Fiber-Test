@@ -19,7 +19,7 @@ namespace flib
 		int get_thread_count();
 
 	private:
-		static friend void thread_func(flib::thread_pool*, const int threadid);
+		friend void thread_func(flib::thread_pool*, const int threadid);
 		void initialize(const int& threadCount);
 		std::function<void()> wait_job();
 

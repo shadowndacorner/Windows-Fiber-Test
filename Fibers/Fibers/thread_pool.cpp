@@ -11,6 +11,24 @@ void flib::thread_pool::post_job(const std::function<void()>& func)
 	m_cvar.notify_one();
 }
 
+namespace flib
+{
+	void thread_func(flib::thread_pool* m_pool, const int threadid)
+	{
+		++m_pool->m_activeThreads;
+		set_this_thread_affinity(threadid);
+
+		// Wait until we're on the correct thread
+		while (get_current_processor() != threadid) { std::this_thread::yield(); }
+		while (m_pool->m_running)
+		{
+			auto job = m_pool->wait_job();
+			if (job != 0)
+				job();
+		}
+		--m_pool->m_activeThreads;
+	}
+}
 int flib::thread_pool::get_thread_count()
 {
 	return m_threads.size();
@@ -64,20 +82,4 @@ std::function<void()> flib::thread_pool::wait_job()
 	ret = tasks.front();
 	tasks.pop();
 	return ret;
-}
-
-void flib::thread_func(flib::thread_pool* m_pool, const int threadid)
-{
-	++m_pool->m_activeThreads;
-	set_this_thread_affinity(threadid);
-
-	// Wait until we're on the correct thread
-	while (get_current_processor() != threadid) { std::this_thread::yield(); }
-	while (m_pool->m_running)
-	{
-		auto job = m_pool->wait_job();
-		if (job != 0)
-			job();
-	}
-	--m_pool->m_activeThreads;
 }
