@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <thread>
 #include <atomic>
 
 namespace flib
@@ -30,6 +31,8 @@ namespace flib
 
 		atomic_counter& operator--();
 		atomic_counter operator--(int);
+
+		void wait_for_value(uint32_t target);
 		
 		bool operator>(const uint32_t&);
 		bool operator<(const uint32_t&);

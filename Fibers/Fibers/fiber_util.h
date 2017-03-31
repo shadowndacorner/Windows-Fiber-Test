@@ -14,10 +14,12 @@ namespace flib
 {
 	namespace fiber_util
 	{
+		void flInitializeSystem();
 		fid_t flInitializeThread();
 		bool flDeinitializeThread();
 		fid_t flCreateFiber(const size_t&, const fib_start&, void* const data);
 		fid_t flGetCurrentFiber();
+		bool flIsFiber();
 		void flFiberSwitch(const fid_t&);
 		void flDeleteFiber(const fid_t&);
 	}

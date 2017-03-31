@@ -5,6 +5,25 @@ using namespace flib::fiber_util;
 
 static thread_local fid_t current_main;
 static thread_local fiber_data* active_fiber;
+static flib::fiber::fiber_scheduler global_sched;
+void flib::fiber::fiber_scheduler::run_job(const task_decl & dat, flib::atomic_counter * const cnt)
+{
+	fiber_data* data = data_alloc.allocate(1);
+	fiber_data& fdat = data[0];
+
+	if (cnt != nullptr)
+		++(*cnt);
+	fdat.func = dat.func;
+	fdat.prio = dat.prio;
+	fdat.data = dat.data;
+	fdat.isComplete = false;
+	fdat.asleep = false;
+	fdat.sched = this;
+	fdat.counter = cnt;
+	fdat.fiber = flCreateFiber(128 * 1024, fiber_func, &fdat);
+	schedule(fdat);
+}
+
 void flib::fiber::fiber_scheduler::run_jobs(task_decl* const dat, const size_t& count, flib::atomic_counter * const cnt)
 {
 	// TODO: optimize this
@@ -13,14 +32,14 @@ void flib::fiber::fiber_scheduler::run_jobs(task_decl* const dat, const size_t& 
 	{
 		fiber_data& fdat = data[i];
 		if (cnt != nullptr)
-			--(*cnt);
+			++(*cnt);
 		fdat.func = dat[i].func;
 		fdat.prio = dat[i].prio;
 		fdat.data = dat[i].data;
 		fdat.isComplete = false;
+		fdat.asleep = false;
 		fdat.sched = this;
 		fdat.counter = cnt;
-		fdat.fiber = 0;
 		fdat.fiber = flCreateFiber(128 * 1024, fiber_func, &fdat);
 		schedule(fdat);
 	}
@@ -87,4 +106,9 @@ void flib::fiber::fiber_scheduler::fiber_func(void* data)
 	dat->func(dat->sched, dat->data);
 	dat->isComplete = true;
 	dat->sched->yield();
+}
+
+flib::fiber::fiber_scheduler * flib::fiber::get_global_scheduler()
+{
+	return &global_sched;
 }

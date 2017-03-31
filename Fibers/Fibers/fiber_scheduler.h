@@ -23,7 +23,7 @@ namespace flib
 		struct task_decl
 		{
 			fiber_function func;
-			fiber_priority prio;
+			fiber_priority prio = fiber_priority::low;
 			void* data;
 		};
 
@@ -37,11 +37,13 @@ namespace flib
 			void* data;
 			fiber_priority prio;
 			bool isComplete;
+			bool asleep;
 		};
 
 		class fiber_scheduler
 		{
 		public:
+			void run_job(const task_decl& dat, flib::atomic_counter* const cnt);
 			void run_jobs(task_decl* const dat, const size_t& count, flib::atomic_counter * const cnt = nullptr);
 			void do_work();
 			bool has_work();
@@ -55,6 +57,7 @@ namespace flib
 
 			static void fiber_func(void*);
 		};
-		
+
+		fiber_scheduler* get_global_scheduler();
 	}
 }
