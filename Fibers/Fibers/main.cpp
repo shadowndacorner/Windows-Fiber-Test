@@ -16,28 +16,42 @@ int main(int argc, char** argv, char** env)
 		char arr[1024]; 
 	};
 
-	flib::atomic_counter count;
-	count = 0;
-	for (int i = 0; i < 1000; ++i)
+	for (int i = 0; i < 100000; ++i)
 	{
-		pool.post_job([](void* const data){
-			int i = (int)data;
-			flib::tagged_linear_allocator<allocTest> alloc(10);
-			for (int i = 0; i < 1000; ++i)
-			{
-				alloc.allocate();
-			}
-		}, (void*)i, &count);
-	}
-
-	while (count > 0) {
-		if (pool.do_work_if_available())
+		for (int i = 0; i < 100; ++i)
 		{
-			printf("Main thread working...\n");
+			flib::shared_heap.free(i);
 		}
-		else
+
+		flib::atomic_counter count;
+		count = 0;
+		for (int i = 0; i < 1000; ++i)
 		{
-			std::this_thread::yield();
+			pool.post_job([](void* const data) {
+				int i = (int)data;
+				printf("job %d\n", i);
+				flib::tagged_linear_allocator<allocTest> alloc(10);
+				for (int i = 0; i < 1000; ++i)
+				{
+					alloc.allocate();
+				}
+
+				if (i % 3 == 0)
+				{
+					flib::shared_heap.free(10 + i % 10);
+				}
+			}, (void*)i, &count);
+		}
+
+		while (count > 0) {
+			if (pool.do_work_if_available())
+			{
+				printf("Main thread working...\n");
+			}
+			else
+			{
+				std::this_thread::yield();
+			}
 		}
 	}
 

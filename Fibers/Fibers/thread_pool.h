@@ -22,9 +22,10 @@ namespace flib
 	{
 		struct ctr_task_start_data
 		{
-			std::allocator<ctr_task_start_data>* alloc;
-			flib::atomic_counter* ctr;
 			task_struct task;
+			std::allocator<ctr_task_start_data>* alloc;
+			std::mutex* mut;
+			flib::atomic_counter* ctr;
 		};
 	}
 	class thread_pool
@@ -51,7 +52,7 @@ namespace flib
 
 		flib::concurrent_queue<task_struct> tasks;
 		std::allocator<thread_pool_internal::ctr_task_start_data> m_alloc;
-		//std::queue<std::function<void()>> tasks;
+
 		bool m_running;
 	};
 }

@@ -9,18 +9,26 @@ void flib::thread_pool::post_job(const tp_task_func& func, void* const data, fli
 	{
 		++(*cnt);
 
-		auto m_dat = m_alloc.allocate(1);
-		m_dat->alloc = &m_alloc;
-		m_dat->ctr = cnt;
-		m_dat->task.data = data;
-		m_dat->task.task = func;
+		using namespace flib::thread_pool_internal;
+		ctr_task_start_data* m_dat;
+		{
+			std::unique_lock<std::mutex> lock(m_mutex);
+			m_dat = m_alloc.allocate(1);
+			m_dat->alloc = &m_alloc;
+			m_dat->ctr = cnt;
+			m_dat->task.data = data;
+			m_dat->task.task = func;
+			m_dat->mut = &m_mutex;
+		}
 
 		tasks.push(task_struct([](void* const data) {
-			auto ptr = reinterpret_cast<flib::thread_pool_internal::ctr_task_start_data*>(data);
-			auto dat = *ptr;
-			dat.alloc->deallocate(ptr, 1);
+			auto ptr = reinterpret_cast<ctr_task_start_data*>(data);
+			ctr_task_start_data dat = *ptr;
+			
 			dat.task.task(dat.task.data);
 			--(*dat.ctr);
+			std::unique_lock<std::mutex> lock(*(dat.mut));
+			dat.alloc->deallocate(ptr, 1);
 		}, reinterpret_cast<void*>(m_dat)));
 	}
 	else
@@ -102,14 +110,13 @@ flib::task_struct flib::thread_pool::wait_job()
 {
 	task_struct ret;
 	std::unique_lock<std::mutex> lock(m_mutex);
-	while (tasks.size() == 0 && m_running)
+	while (tasks.size() == 0)
 	{
+		if (!m_running)
+			return ret;
 		m_cvar.wait(lock);
 	}
 
-	if (!m_running || tasks.size() == 0)
-		return task_struct();
-	ret = tasks.front();
-	tasks.pop();
+	tasks.try_pop_front(&ret);
 	return ret;
 }
