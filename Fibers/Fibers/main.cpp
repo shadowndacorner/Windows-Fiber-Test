@@ -3,13 +3,16 @@
 #include "thread_pool.h"
 #include "tagged_linear_allocator.h"
 #include "atomic_counter.h"
-#include "fiber_util.h"
+//#include "fiber_util.h"
+//#include "fiber_scheduler.h"
+#include "tasks.h"
 #include "fiber_scheduler.h"
 
 int main(int argc, char** argv, char** env)
 {
 	flib::fiber_util::flInitializeSystem();
-	//printf("NULL FIBER IS %p\n", flib::fiber_util::flGetCurrentFiber());
+	
+	// ensure that the main thread runs different logic from the workers
 	flib::thread_pool pool(std::thread::hardware_concurrency() - 1);
 	set_this_thread_affinity(std::thread::hardware_concurrency() - 1);
 
@@ -113,58 +116,18 @@ int main(int argc, char** argv, char** env)
 		}
 	}
 
+
+	// Fiber scheduler test
 	struct fiber_job {
 		flib::fiber::fiber_scheduler* sched;
 		bool* running;
 	};
 
-	bool running = true;
-	std::vector<fiber_job> jobs;
-	flib::fiber::fiber_scheduler& sched = *flib::fiber::get_global_scheduler();
-	flib::atomic_counter g_cnt;
-	for (int i = 0; i < 100; ++i)
-	{
-		flib::fiber::task_decl task;
-		task.data = nullptr;
-		task.prio = flib::fiber::fiber_priority::low;
-		task.func = TASK_LAMBDA
-		{
-			auto cur = flib::fiber_util::flGetCurrentFiber();
-			printf("Running fiber 0x%p, yielding...\n", cur);
-			sched->yield();
-
-			printf("Spawning child task...\n");
-			flib::atomic_counter cnt;
-			for (int i = 0; i < 1; ++i)
-			{
-				flib::fiber::task_decl child;
-				child.data = nullptr;
-				child.prio = flib::fiber::fiber_priority::high;
-				child.func = TASK_LAMBDA{
-					// do a lot of shit
-					printf("Child fiber spinning for a long fucking time\n");
-					for (int i = 0; i < 10000; ++i)
-					{
-						if (i % 1000 == 0)
-							printf("yielding...\n");
-						sched->yield();
-					}
-					printf("Done spinning, the other fiber should be able to resume now\n");
-				};
-				sched->run_jobs(&child, 1, &cnt);
-			}
-			printf("Waiting on child task to complete...\n");
-			cnt.wait_for_value(0);
-			printf("Child completed!  [0x%p\n", cur);
-		};
-		task.prio = flib::fiber::fiber_priority::high;
-		sched.run_jobs(&task, 1, &g_cnt);
-	}
-
+	bool brunning = true;
 	fiber_job data;
-	data.sched = flib::fiber::get_global_scheduler();
-	data.running = &running;
-	for (int i = 0; i < std::thread::hardware_concurrency() - 1; ++i)
+	data.sched = flib::task_scheduler();
+	data.running = &brunning;
+	for (int i = 0; i < std::thread::hardware_concurrency(); ++i)
 	{
 		pool.post_job([](void* data) {
 			fiber_job dat = *reinterpret_cast<fiber_job*>(data);
@@ -176,16 +139,112 @@ int main(int argc, char** argv, char** env)
 		}, &data, NULL);
 	}
 
-	while (g_cnt > 0)
+	/*
+	if (false){
+		bool running = true;
+		std::vector<fiber_job> jobs;
+		flib::fiber::fiber_scheduler& sched = *flib::fiber::get_global_scheduler();
+		flib::atomic_counter g_cnt;
+		for (int i = 0; i < 100; ++i)
+		{
+			flib::task_decl task;
+			task.data = nullptr;
+			task.prio = flib::fiber_priority::low;
+			task.func = TASK_LAMBDA
+			{
+				auto cur = flib::fiber_util::flGetCurrentFiber();
+				printf("Running fiber 0x%p, yielding...\n", cur);
+				sched->yield();
+
+				printf("Spawning child task...\n");
+				flib::atomic_counter cnt;
+				for (int i = 0; i < 1; ++i)
+				{
+					flib::task_decl child;
+					child.data = nullptr;
+					child.prio = flib::fiber_priority::high;
+					child.func = TASK_LAMBDA{
+						// do a lot of shit
+						printf("Child fiber spinning for a long fucking time\n");
+						for (int i = 0; i < 10000; ++i)
+						{
+							if (i % 1000 == 0)
+								printf("yielding...\n");
+							sched->yield();
+						}
+						printf("Done spinning, the other fiber should be able to resume now\n");
+					};
+					sched->run_jobs(&child, 1, &cnt);
+				}
+				printf("Waiting on child task to complete...\n");
+				cnt.wait_for_value(0);
+				printf("Child completed!  [0x%p\n", cur);
+			};
+			task.prio = flib::fiber_priority::high;
+			sched.run_jobs(&task, 1, &g_cnt);
+		}
+
+		fiber_job data;
+		data.sched = flib::fiber::get_global_scheduler();
+		data.running = &running;
+		for (int i = 0; i < std::thread::hardware_concurrency() - 1; ++i)
+		{
+			pool.post_job([](void* data) {
+				fiber_job dat = *reinterpret_cast<fiber_job*>(data);
+				while (*(dat.running))
+				{
+					dat.sched->do_work();
+				}
+
+			}, &data, NULL);
+		}
+
+		while (g_cnt > 0)
+		{
+			sched.do_work();
+		}
+
+		printf("Press enter to kill fiber queue...\n");
+		std::cin.getline(f, 512);
+		running = false;
+	}
+	*/
 	{
-		sched.do_work();
+		using namespace flib;
+
+		atomic_counter gcnt;
+		auto frame_task =
+			TASK_LAMBDA
+		{
+		using namespace flib;
+		printf("sched @ %p, data @ %p\n", sched, data);
+		atomic_counter frame_cnt;
+
+		// Kick off gameplay coroutine
+		frame_cnt.wait_for_value(0);
+		
+		// Kick off rendering coroutine
+		frame_cnt.wait_for_value(0);
+		
+		// Kick off GPU coroutine
+		frame_cnt.wait_for_value(0);
+		};
+
+		task_decl task;
+		task.func = frame_task;
+		task.prio = fiber_priority::high;
+		task.data = &gcnt;
+		RunTask(task, &gcnt);
+		while (gcnt > 0)
+		{
+			flib::fiber::get_global_scheduler()->do_work();
+		}
 	}
 
-	printf("Press enter to kill fiber queue...\n");
 	std::cin.getline(f, 512);
-	running = false;
+	brunning = false;
 
-	printf("All jobs finished, press enter to clear memory\n");
+	printf("All tests completed, press enter to clear memory\n");
 	std::cin.getline(f, 512);
 
 	for (int i = 0; i < 20; ++i)

@@ -3,30 +3,13 @@
 #include "concurrent_queue.h"
 #include "fiber_util.h"
 #include "atomic_counter.h"
-
-#define TASK_FUNCTION(name) void name(flib::fiber::fiber_scheduler* const sched, void* const data)
-#define TASK_LAMBDA [](flib::fiber::fiber_scheduler* const sched, void* const data)
+#include "tasks.h"
 
 namespace flib
 {
 	namespace fiber
 	{
 		class fiber_scheduler;
-		typedef void(*fiber_function)(fiber::fiber_scheduler* const, void* const data);
-		
-		enum fiber_priority {
-			low,
-			medium,
-			high
-		};
-
-		struct task_decl
-		{
-			fiber_function func;
-			fiber_priority prio = fiber_priority::low;
-			void* data;
-		};
-
 		struct fiber_data
 		{
 			fid_t fiber;

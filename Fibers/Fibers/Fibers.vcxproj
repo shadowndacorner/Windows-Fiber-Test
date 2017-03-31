@@ -27,6 +27,7 @@
     <ClInclude Include="frame_data.h" />
     <ClInclude Include="tagged_heap.h" />
     <ClInclude Include="tagged_linear_allocator.h" />
+    <ClInclude Include="tasks.h" />
     <ClInclude Include="thread_ex.h" />
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>
@@ -36,6 +37,7 @@
     <ClCompile Include="fiber_util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tagged_heap.cpp" />
+    <ClCompile Include="tasks.cpp" />
     <ClCompile Include="thread_pool.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -45,6 +45,9 @@
     <ClInclude Include="concurrent_allocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tasks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="fiber_scheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tasks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
