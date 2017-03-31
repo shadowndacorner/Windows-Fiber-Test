@@ -11,6 +11,11 @@ void flib::thread_pool::post_job(const std::function<void()>& func)
 	m_cvar.notify_one();
 }
 
+int flib::thread_pool::get_thread_count()
+{
+	return m_threads.size();
+}
+
 flib::thread_pool::thread_pool()
 {
 	initialize(std::thread::hardware_concurrency());
@@ -28,6 +33,7 @@ flib::thread_pool::~thread_pool()
 	{
 		m_cvar.notify_all();
 		(*iter).join();
+		m_cvar.notify_all();
 	}
 }
 
@@ -64,6 +70,7 @@ void flib::thread_func(flib::thread_pool* m_pool, const int threadid)
 {
 	++m_pool->m_activeThreads;
 	set_this_thread_affinity(threadid);
+
 	// Wait until we're on the correct thread
 	while (get_current_processor() != threadid) { std::this_thread::yield(); }
 	while (m_pool->m_running)

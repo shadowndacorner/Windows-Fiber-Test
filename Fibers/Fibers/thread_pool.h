@@ -16,7 +16,8 @@ namespace flib
 
 	public:
 		void post_job(const std::function<void()>&);
-	
+		int get_thread_count();
+
 	private:
 		static friend void thread_func(flib::thread_pool*, const int threadid);
 		void initialize(const int& threadCount);

@@ -13,7 +13,7 @@ int main(int argc, char** argv, char** env)
 	{
 		union
 		{
-			char arr[512];
+			char arr[128];
 			double d;
 			float f;
 			int num;
@@ -21,33 +21,38 @@ int main(int argc, char** argv, char** env)
 		};
 	};
 
-
-	flib::tagged_linear_allocator<allocTest, 10> alloc;
-	flib::tagged_linear_allocator<allocTest, 11> allocb;
-	flib::tagged_linear_allocator<allocTest, 10> allocc;
-	flib::tagged_linear_allocator<allocTest, 12> allocd;
-	for (int i = 0; i < 1000000; ++i)
+	std::atomic_ushort count = 5;
+	for (int i = 0; i < 5; ++i)
 	{
-		auto test = alloc.allocate();
+		pool.post_job([i, &count]{
+			flib::tagged_linear_allocator<allocTest> alloc(10 + i % 2);
+			for (int i = 0; i < 10000000; ++i)
+			{
+				alloc.allocate();
+			}
+
+			printf("Thread %d done\n", i);
+
+			if (i % 3 == 0) {
+				printf("Freeing memory\n");
+				flib::shared_heap.free(10);
+			}
+			--count;
+		});
+	}
+	while (count > 0) {
+		std::this_thread::yield();
 	}
 
-	for (int i = 0; i < 10000000; ++i)
-	{
-		auto test = allocb.allocate();
-	}
+	printf("All jobs finished, press enter to clear memory\n");
+	std::cin.getline(f, 512);
 
-	flib::shared_heap.free(11);
-	for (int i = 0; i < 10000000; ++i)
+	for (int i = 0; i < 15; ++i)
 	{
-		auto test = allocc.allocate();
+		flib::shared_heap.free(i);
 	}
-	flib::shared_heap.free(10);
-
-	for (int i = 0; i < 10000000; ++i)
-	{
-		auto test = allocd.allocate();
-	}
-
+	printf("Press enter to close\n");
 	auto& heap = flib::shared_heap;
-	printf("done!\n");
+	std::cin.getline(f, 512);
+	printf("Finishing\n");
 }

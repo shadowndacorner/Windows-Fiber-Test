@@ -7,15 +7,23 @@ flib::tagged_heap::tagged_heap()
 	
 }
 
+flib::tagged_heap::tagged_heap(size_t numFreeBlocks)
+{
+	std::lock_guard<std::mutex> lock(m_alloc_mutex);
+	for (size_t i = 0; i < numFreeBlocks; ++i)
+	{
+		free_blocks.push(new char[FLIB_HEAP_BLOCK_SIZE]);
+	}
+}
+
 char* flib::tagged_heap::alloc_block(const uint64_t& key)
 {
+	std::lock_guard<std::mutex> lock(m_alloc_mutex);
 	char* ptr = NULL;
-	std::unique_lock<std::mutex>(m_mutex);
 	if (free_blocks.size() > 0)
 	{
 		ptr = free_blocks.front();
 		free_blocks.pop();
-		//printf("\tPooled block\n");
 	}
 	else
 	{
@@ -32,7 +40,7 @@ char* flib::tagged_heap::alloc_block(const uint64_t& key)
 
 void flib::tagged_heap::free(const uint64_t& key)
 {
-	std::unique_lock<std::mutex>(m_mutex);
+	std::lock_guard<std::mutex> lock(m_alloc_mutex);
 	if (allocated_blocks.count(key) > 0)
 	{
 		std::vector<char*>& set = allocated_blocks.at(key);
@@ -55,6 +63,7 @@ void flib::tagged_heap::free(const uint64_t& key)
 
 flib::tagged_heap::~tagged_heap()
 {
+	std::lock_guard<std::mutex> lock(m_alloc_mutex);
 	for (auto iter = allocated_blocks.begin(); iter != allocated_blocks.end(); ++iter)
 	{
 		std::vector<char*>& set = (*iter).second;

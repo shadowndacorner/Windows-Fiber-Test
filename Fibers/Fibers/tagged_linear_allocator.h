@@ -4,18 +4,26 @@
 
 namespace flib
 {
-	template <typename T, uint64_t key>
+	template <typename T>
 	class tagged_linear_allocator
 	{
 	public:
-		tagged_linear_allocator()=default;
+		tagged_linear_allocator(uint64_t key);
 		T* allocate(const size_t& num = 1);
 	private:
+		uint64_t key;
 		char* block_end;
 		char* cur_ptr;
 	};
-	template<typename T, uint64_t key>
-	inline T * tagged_linear_allocator<T, key>::allocate(const size_t& num)
+
+	template<typename T>
+	inline tagged_linear_allocator<T>::tagged_linear_allocator(uint64_t bkey)
+	{
+		key = bkey;
+	}
+
+	template<typename T>
+	inline T* tagged_linear_allocator<T>::allocate(const size_t& num)
 	{
 		T* ptr;
 		assert(sizeof(T) * num <= FLIB_HEAP_BLOCK_SIZE);
