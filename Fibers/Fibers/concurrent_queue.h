@@ -16,6 +16,7 @@ namespace flib
 		T& front();
 		T& back();
 		T& pop_front();
+		bool try_pop_front(T*);
 		size_t size();
 		void pop();
 		void push(const T&);
@@ -57,9 +58,24 @@ namespace flib
 	}
 
 	template<typename T>
-	inline size_t concurrent_queue<T>::size()
+	inline bool concurrent_queue<T>::try_pop_front(T *tg)
 	{
 		std::lock_guard<mutex> lock(m_mutex);
+		if (m_queue.size() == 0)
+		{
+			*tg = T();
+			return false;
+		}
+
+		auto func = m_queue.front();
+		*tg = func;
+		m_queue.pop();
+		return true;
+	}
+
+	template<typename T>
+	inline size_t concurrent_queue<T>::size()
+	{
 		return m_queue.size();
 	}
 
