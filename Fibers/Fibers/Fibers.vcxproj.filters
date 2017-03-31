@@ -48,6 +48,9 @@
     <ClInclude Include="tasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="concurrent_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

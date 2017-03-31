@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="atomic_counter.h" />
     <ClInclude Include="concurrent_allocator.h" />
+    <ClInclude Include="concurrent_list.h" />
     <ClInclude Include="concurrent_queue.h" />
     <ClInclude Include="fiber_scheduler.h" />
     <ClInclude Include="fiber_util.h" />

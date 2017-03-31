@@ -58,6 +58,7 @@ void flib::fiber::fiber_scheduler::do_work()
 		target->yield_to = flGetCurrentFiber();
 		active_fiber = target;
 		flFiberSwitch(target->fiber);
+		active_fiber = nullptr;
 		if (!target->isComplete)
 		{
 			schedule(*target);
@@ -86,6 +87,10 @@ void flib::fiber::fiber_scheduler::yield()
 
 void flib::fiber::fiber_scheduler::schedule(fiber_data & fdat)
 {
+	// If we're sleeping, allow someone else to hold us
+	if (fdat.asleep)
+		return;
+
 	switch (fdat.prio)
 	{
 	case low:
@@ -111,4 +116,9 @@ void flib::fiber::fiber_scheduler::fiber_func(void* data)
 flib::fiber::fiber_scheduler * flib::fiber::get_global_scheduler()
 {
 	return &global_sched;
+}
+
+fiber_data * flib::fiber::get_active_data()
+{
+	return active_fiber;
 }

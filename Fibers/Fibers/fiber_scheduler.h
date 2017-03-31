@@ -14,11 +14,11 @@ namespace flib
 		{
 			fid_t fiber;
 			fid_t yield_to;
-			fiber_function func;
+			task_function func;
 			flib::atomic_counter* counter;
 			fiber_scheduler* sched;
 			void* data;
-			fiber_priority prio;
+			task_priority prio;
 			bool isComplete;
 			bool asleep;
 		};
@@ -32,6 +32,8 @@ namespace flib
 			bool has_work();
 			void yield();
 		private:
+			friend class flib::atomic_counter;
+
 			void schedule(fiber_data& dat);
 			flib::concurrent_queue<fiber_data*> high_prio;
 			flib::concurrent_queue<fiber_data*> med_prio;
@@ -42,5 +44,6 @@ namespace flib
 		};
 
 		fiber_scheduler* get_global_scheduler();
+		fiber_data* get_active_data();
 	}
 }

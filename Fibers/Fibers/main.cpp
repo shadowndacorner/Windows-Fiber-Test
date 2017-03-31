@@ -7,6 +7,8 @@
 //#include "fiber_scheduler.h"
 #include "tasks.h"
 #include "fiber_scheduler.h"
+using namespace flib;
+atomic_counter frame_cnt;
 
 int main(int argc, char** argv, char** env)
 {
@@ -125,7 +127,7 @@ int main(int argc, char** argv, char** env)
 
 	bool brunning = true;
 	fiber_job data;
-	data.sched = flib::task_scheduler();
+	data.sched = flib::task_scheduling::task_scheduler();
 	data.running = &brunning;
 	for (int i = 0; i < std::thread::hardware_concurrency(); ++i)
 	{
@@ -149,7 +151,7 @@ int main(int argc, char** argv, char** env)
 		{
 			flib::task_decl task;
 			task.data = nullptr;
-			task.prio = flib::fiber_priority::low;
+			task.prio = flib::task_priority::low;
 			task.func = TASK_LAMBDA
 			{
 				auto cur = flib::fiber_util::flGetCurrentFiber();
@@ -162,7 +164,7 @@ int main(int argc, char** argv, char** env)
 				{
 					flib::task_decl child;
 					child.data = nullptr;
-					child.prio = flib::fiber_priority::high;
+					child.prio = flib::task_priority::high;
 					child.func = TASK_LAMBDA{
 						// do a lot of shit
 						printf("Child fiber spinning for a long fucking time\n");
@@ -180,7 +182,7 @@ int main(int argc, char** argv, char** env)
 				cnt.wait_for_value(0);
 				printf("Child completed!  [0x%p\n", cur);
 			};
-			task.prio = flib::fiber_priority::high;
+			task.prio = flib::task_priority::high;
 			sched.run_jobs(&task, 1, &g_cnt);
 		}
 
@@ -218,8 +220,35 @@ int main(int argc, char** argv, char** env)
 		{
 		using namespace flib;
 		printf("sched @ %p, data @ %p\n", sched, data);
-		atomic_counter frame_cnt;
 
+		task_decl child;
+		child.func = TASK_LAMBDA{
+			using namespace flib;
+			for (int i = 0; i < 10000; ++i)
+			{
+				if (i % 50 == 0)
+					this_task::yield();
+			}
+
+			for (int i = 0; i < 50; ++i)
+			{
+				task_decl child;
+				child.func = TASK_LAMBDA{
+					using namespace flib;
+					for (int i = 0; i < 10000; ++i)
+					{
+						if (i % 50 == 0)
+							this_task::yield();
+					}
+				};
+				child.prio = task_priority::low;
+				RunTask(child, &frame_cnt);
+			}
+			WaitForCounter(&frame_cnt, 5);
+		};
+		child.prio = flib::task_priority::low;
+		
+		RunTask(child, &frame_cnt);
 		// Kick off gameplay coroutine
 		frame_cnt.wait_for_value(0);
 		
@@ -232,7 +261,7 @@ int main(int argc, char** argv, char** env)
 
 		task_decl task;
 		task.func = frame_task;
-		task.prio = fiber_priority::high;
+		task.prio = task_priority::high;
 		task.data = &gcnt;
 		RunTask(task, &gcnt);
 		while (gcnt > 0)

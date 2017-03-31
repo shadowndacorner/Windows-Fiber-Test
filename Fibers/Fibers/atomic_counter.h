@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <thread>
 #include <atomic>
+#include <list>
+#include <mutex>
 
 namespace flib
 {
@@ -41,8 +43,16 @@ namespace flib
 		bool operator<=(const uint32_t&);
 	private:
 		std::atomic_uint32_t m_cnt;
+		struct wait_struct
+		{
+			void* task;
+			uint32_t target;
+		};
+
+		std::list<wait_struct> waiters;
+		std::mutex m_waitmut;
+		void resume_waiters();
 	};
-	//typedef std::atomic_uint16_t atomic_counter;
 }
 
 inline void flib::atomic_counter::operator=(const uint32_t & t)
@@ -64,6 +74,9 @@ inline flib::atomic_counter flib::atomic_counter::operator++(int)
 inline flib::atomic_counter & flib::atomic_counter::operator--()
 {
 	--m_cnt;
+
+
+
 	return *this;
 }
 
