@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="atomic_counter.h" />
+    <ClInclude Include="concurrent_allocator.h" />
     <ClInclude Include="concurrent_queue.h" />
     <ClInclude Include="fiber_scheduler.h" />
     <ClInclude Include="fiber_util.h" />
@@ -30,6 +31,8 @@
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="atomic_counter.cpp" />
+    <ClCompile Include="fiber_scheduler.cpp" />
     <ClCompile Include="fiber_util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tagged_heap.cpp" />

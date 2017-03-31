@@ -10,14 +10,19 @@ fid_t flib::fiber_util::flInitializeThread()
 	return ConvertThreadToFiber(0);
 }
 
+bool flib::fiber_util::flDeinitializeThread()
+{
+	return ConvertFiberToThread();
+}
+
 void flib::fiber_util::flFiberSwitch(const fid_t& fid)
 {
 	SwitchToFiber((LPVOID)fid);
 }
 
-fid_t flib::fiber_util::flCreateFiber(const size_t& stack_size, const fib_start& start)
+fid_t flib::fiber_util::flCreateFiber(const size_t& stack_size, const fib_start& start, void* const data)
 {
-	return CreateFiber(stack_size, start, 0);
+	return CreateFiber(stack_size, start, data);
 }
 
 fid_t flib::fiber_util::flGetCurrentFiber()
