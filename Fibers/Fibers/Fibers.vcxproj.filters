@@ -30,10 +30,16 @@
     <ClInclude Include="tagged_linear_allocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Task.h">
+    <ClInclude Include="fiber_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="task_scheduler.h">
+    <ClInclude Include="fiber_scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="concurrent_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="atomic_counter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tagged_heap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fiber_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

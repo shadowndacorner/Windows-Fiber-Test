@@ -1,6 +1,7 @@
 #include <iostream>
 #include "thread_pool.h"
 #include "tagged_linear_allocator.h"
+#include "atomic_counter.h"
 
 int main(int argc, char** argv, char** env)
 {
@@ -9,37 +10,30 @@ int main(int argc, char** argv, char** env)
 	std::cin.getline(f, 512);
 	struct allocTest
 	{
-		union
-		{
-			char arr[128];
-			double d;
-			float f;
-			int num;
-			char c;
-		};
+		char arr[1024]; 
 	};
 
-	std::atomic_ushort count;
+	flib::atomic_counter count;
 	count = 5;
 	for (int i = 0; i < 5; ++i)
 	{
 		pool.post_job([i, &count]{
 			flib::tagged_linear_allocator<allocTest> alloc(10 + i % 2);
-			for (int i = 0; i < 100; ++i)
+			for (int i = 0; i < 1000000; ++i)
 			{
 				alloc.allocate();
-				//print.f("Allocate from job %d\n", i);
 			}
 
 			printf("Thread %d done\n", i);
 
-			if (i % 3 == 0) {
+			if ((i-2) % 3 == 0) {
 				printf("Freeing memory\n");
-				flib::shared_heap.free(10);
+				flib::shared_heap.free(10 + (i % 2));
 			}
 			--count;
 		});
 	}
+
 	while (count > 0) {
 		std::this_thread::yield();
 	}

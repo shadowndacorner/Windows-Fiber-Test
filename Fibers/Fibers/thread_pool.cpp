@@ -4,10 +4,7 @@
 
 void flib::thread_pool::post_job(const std::function<void()>& func)
 {
-	{
-		std::unique_lock<std::mutex>(m_mutex);
-		tasks.push(func);
-	}
+	tasks.push(func);
 	m_cvar.notify_one();
 }
 
@@ -77,7 +74,7 @@ std::function<void()> flib::thread_pool::wait_job()
 		m_cvar.wait(lock);
 	}
 
-	if (!m_running)
+	if (!m_running || tasks.size() == 0)
 		return 0;
 	ret = tasks.front();
 	tasks.pop();

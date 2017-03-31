@@ -2,8 +2,8 @@
 #include <vector>
 #include <thread>
 #include <atomic>
-#include <queue>
 #include <condition_variable>
+#include "concurrent_queue.h"
 
 namespace flib
 {
@@ -26,10 +26,10 @@ namespace flib
 		std::vector<std::thread> m_threads;
 		std::atomic_ushort m_activeThreads;
 		std::condition_variable m_cvar;
-		std::mutex m_work_wait_mutex;
-
 		std::mutex m_mutex;
-		std::queue<std::function<void()>> tasks;
+
+		flib::concurrent_queue<std::function<void()>> tasks;
+		//std::queue<std::function<void()>> tasks;
 		bool m_running;
 	};
 }

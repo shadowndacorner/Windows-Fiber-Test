@@ -19,15 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="task_scheduler.h" />
+    <ClInclude Include="atomic_counter.h" />
+    <ClInclude Include="concurrent_queue.h" />
+    <ClInclude Include="fiber_scheduler.h" />
+    <ClInclude Include="fiber_util.h" />
     <ClInclude Include="frame_data.h" />
     <ClInclude Include="tagged_heap.h" />
     <ClInclude Include="tagged_linear_allocator.h" />
-    <ClInclude Include="Task.h" />
     <ClInclude Include="thread_ex.h" />
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fiber_util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tagged_heap.cpp" />
     <ClCompile Include="thread_pool.cpp" />
