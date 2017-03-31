@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#define FRAMES_TO_TRACK 16
 
 namespace flib
 {
@@ -25,9 +26,11 @@ namespace flib
 		uint32_t frameNumber;
 	};
 
+	FrameParams params[FRAMES_TO_TRACK];
+
 	static thread_local FrameParams* current;
 	static bool HasFrameCompleted(uint32_t frame)
 	{
-
+		return params[frame % FRAMES_TO_TRACK].hasRendered;
 	}
 }
