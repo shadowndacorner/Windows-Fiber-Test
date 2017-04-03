@@ -18,7 +18,7 @@ static bool is_game_running = true;
 
 TASK_FUNCTION(frame_task)
 {
-	MICROPROFILE_SCOPEI("frametime", "frame", 0x308080);
+	//MICROPROFILE_SCOPEI("frametime", "frame", 0x308080);
 	uint64_t dat = (uint64_t)data;
 	uint32_t sdat = (uint32_t)dat;
 
@@ -131,9 +131,9 @@ int main(int argc, char** argv, char** env)
 
 	flib::fiber_util::flInitializeSystem();
 	
-	flib::thread_pool pool(2);
+	flib::thread_pool pool(std::thread::hardware_concurrency() - 1);
 	// ensure that the main thread runs different logic from the workers
-	//set_this_thread_affinity(std::thread::hardware_concurrency() - 1);
+	set_this_thread_affinity(std::thread::hardware_concurrency() - 1);
 
 	char f[512];
 	std::cin.getline(f, 512);
