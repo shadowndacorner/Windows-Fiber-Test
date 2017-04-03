@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\microprofile">
+      <UniqueIdentifier>{923627d0-7508-4960-9cfc-25df513a61c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thread_ex.h">
@@ -51,6 +54,24 @@
     <ClInclude Include="concurrent_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="counter_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camel_concurrent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ska_sort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="microprofile\microprofile.h">
+      <Filter>Header Files\microprofile</Filter>
+    </ClInclude>
+    <ClInclude Include="microprofile\microprofile_html.h">
+      <Filter>Header Files\microprofile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -72,6 +93,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tasks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="counter_allocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frame_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="timing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="microprofile\microprofile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

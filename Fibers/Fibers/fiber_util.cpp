@@ -1,5 +1,5 @@
 #include "fiber_util.h"
-
+#include "microprofile/microprofile.h"
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -28,7 +28,7 @@ void flib::fiber_util::flFiberSwitch(const fid_t& fid)
 
 bool flib::fiber_util::flIsFiber()
 {
-	return flGetCurrentFiber() != nul_fiber;
+	return IsThreadAFiber();
 }
 
 fid_t flib::fiber_util::flCreateFiber(const size_t& stack_size, const fib_start& start, void* const data)

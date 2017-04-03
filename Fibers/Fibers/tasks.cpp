@@ -7,12 +7,12 @@ namespace flib
 	using namespace flib::fiber;
 	using namespace flib::fiber_util;
 
-	void RunTask(const task_decl& task, atomic_counter * const cnt)
+	void RunTask(const task_decl& task, atomic_counter ** const cnt)
 	{
 		get_global_scheduler()->run_job(task, cnt);
 	}
 
-	void RunTasks(task_decl* task, const size_t & size, atomic_counter * const cnt)
+	void RunTasks(task_decl* task, const size_t & size, atomic_counter ** const cnt)
 	{
 		get_global_scheduler()->run_jobs(task, size, cnt);
 	}

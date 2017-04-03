@@ -1,6 +1,7 @@
 #include "thread_ex.h"
 #include "thread_pool.h"
 #include <iostream>
+#include "microprofile/microprofile.h"
 
 void flib::thread_pool::post_job(const tp_task_func& func, void* const data, flib::atomic_counter* cnt)
 {
@@ -40,8 +41,15 @@ void flib::thread_pool::post_job(const tp_task_func& func, void* const data, fli
 
 namespace flib
 {
+	static thread_local int threadID=-1;
+	int get_worker_id()
+	{
+		return threadID;
+	}
 	void thread_func(flib::thread_pool* m_pool, const int threadid)
 	{
+		MicroProfileOnThreadCreate("worker_thread");
+		threadID = threadid;
 		++m_pool->m_activeThreads;
 		set_this_thread_affinity(threadid);
 
@@ -54,6 +62,7 @@ namespace flib
 				job.task(job.data);
 		}
 		--m_pool->m_activeThreads;
+		MicroProfileOnThreadExit();
 	}
 }
 int flib::thread_pool::get_thread_count()
@@ -64,7 +73,7 @@ int flib::thread_pool::get_thread_count()
 bool flib::thread_pool::do_work_if_available()
 {
 	task_struct task;
-	if (tasks.try_pop_front(&task))
+	if (tasks.try_pop_front(task))
 	{
 		task.task(task.data);
 		return true;
@@ -110,13 +119,13 @@ flib::task_struct flib::thread_pool::wait_job()
 {
 	task_struct ret;
 	std::unique_lock<std::mutex> lock(m_mutex);
-	while (tasks.size() == 0)
+	while (tasks.empty())
 	{
 		if (!m_running)
 			return ret;
 		m_cvar.wait(lock);
 	}
 
-	tasks.try_pop_front(&ret);
+	tasks.try_pop_front(ret);
 	return ret;
 }

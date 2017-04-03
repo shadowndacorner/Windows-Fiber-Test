@@ -82,3 +82,12 @@ flib::tagged_heap::~tagged_heap()
 		free_blocks.pop();
 	}
 }
+
+namespace flib
+{
+	static tagged_heap m_shared_heap;
+	tagged_heap & flib::shared_heap()
+	{
+		return m_shared_heap;
+	}
+}

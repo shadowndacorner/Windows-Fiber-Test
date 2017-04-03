@@ -20,26 +20,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="atomic_counter.h" />
+    <ClInclude Include="camel_concurrent.h" />
     <ClInclude Include="concurrent_allocator.h" />
     <ClInclude Include="concurrent_list.h" />
     <ClInclude Include="concurrent_queue.h" />
+    <ClInclude Include="counter_allocator.h" />
     <ClInclude Include="fiber_scheduler.h" />
     <ClInclude Include="fiber_util.h" />
     <ClInclude Include="frame_data.h" />
+    <ClInclude Include="microprofile\microprofile.h" />
+    <ClInclude Include="microprofile\microprofile_html.h" />
+    <ClInclude Include="ska_sort.h" />
     <ClInclude Include="tagged_heap.h" />
     <ClInclude Include="tagged_linear_allocator.h" />
     <ClInclude Include="tasks.h" />
     <ClInclude Include="thread_ex.h" />
     <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="timing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="atomic_counter.cpp" />
+    <ClCompile Include="counter_allocator.cpp" />
     <ClCompile Include="fiber_scheduler.cpp" />
     <ClCompile Include="fiber_util.cpp" />
+    <ClCompile Include="frame_data.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="microprofile\microprofile.cpp" />
     <ClCompile Include="tagged_heap.cpp" />
     <ClCompile Include="tasks.cpp" />
     <ClCompile Include="thread_pool.cpp" />
+    <ClCompile Include="timing.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -100,6 +110,12 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Development\boost_1_63_0</IncludePath>
     <LibraryPath>C:\Development\boost_1_63_0\build\boost\bin.v2\libs\context\build\msvc-14.0\$(Configuration)\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\release\link-static\threading-multi;C:\Development\boost_1_63_0\build\boost\bin.v2\libs\coroutine\build\msvc-14.0\debug\link-static\threading-multi;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Development\boost_1_63_0;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Development\boost_1_63_0;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -116,6 +132,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -142,6 +161,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

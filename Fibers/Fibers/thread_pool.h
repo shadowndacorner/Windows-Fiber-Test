@@ -28,6 +28,9 @@ namespace flib
 			flib::atomic_counter* ctr;
 		};
 	}
+
+	int get_worker_id();
+
 	class thread_pool
 	{
 	public:

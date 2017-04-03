@@ -23,5 +23,5 @@ namespace flib
 		std::mutex m_alloc_mutex;
 	};
 
-	static tagged_heap shared_heap(64);
+	tagged_heap& shared_heap();
 }

@@ -3,39 +3,24 @@
 #include <thread>
 #include <atomic>
 #include <list>
+#include <allocators>
 #include <mutex>
 
 namespace flib
 {
-	/*
-	class Counter
-	{
-	public:
-		Counter(const uint32_t&);
-		Counter(const Counter&);
-		Counter& operator =(const uint32_t&);
-		Counter& operator ++();
-		Counter operator ++(int);
-	private:
-		std::atomic_uint32_t m_cnt;
-	};*/
-
 	class atomic_counter
 	{
 	public:
 		atomic_counter();
+		atomic_counter(std::allocator<atomic_counter>*);
 		atomic_counter(const uint32_t&);
 		atomic_counter(const atomic_counter&);
 
 		void operator=(const uint32_t& t);
 		atomic_counter& operator++();
-		atomic_counter operator++(int);
-
 		atomic_counter& operator--();
-		atomic_counter operator--(int);
 
-		void wait_for_value(uint32_t target);
-		
+		void wait_for_value(const uint32_t& target);
 		bool operator>(const uint32_t&);
 		bool operator<(const uint32_t&);
 		bool operator==(const uint32_t&);
@@ -49,8 +34,11 @@ namespace flib
 			uint32_t target;
 		};
 
-		std::list<wait_struct> waiters;
-		std::mutex m_waitmut;
+		//std::list<wait_struct> waiters;
+		//std::mutex m_waitmut;
+
+		std::atomic_uint16_t m_death_cnt;
+		std::allocator<atomic_counter>* alloc;
 		void resume_waiters();
 	};
 }
@@ -66,23 +54,11 @@ inline flib::atomic_counter & flib::atomic_counter::operator++()
 	return *this;
 }
 
-inline flib::atomic_counter flib::atomic_counter::operator++(int)
-{
-	return m_cnt++;
-}
-
 inline flib::atomic_counter & flib::atomic_counter::operator--()
 {
 	--m_cnt;
-
-
-
+	resume_waiters();
 	return *this;
-}
-
-inline flib::atomic_counter flib::atomic_counter::operator--(int)
-{
-	return --m_cnt;
 }
 
 inline bool flib::atomic_counter::operator>(const uint32_t &v)

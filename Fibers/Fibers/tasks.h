@@ -14,20 +14,20 @@ namespace flib
 	typedef void(*task_function)(fiber::fiber_scheduler* const, void* const data);
 
 	enum task_priority {
-		low,
-		medium,
-		high
+		low = (1 << 0),
+		medium = (1 << 1),
+		high = (1 << 2)
 	};
 
 	struct task_decl
 	{
 		task_function func;
-		task_priority prio = task_priority::low;
+		task_priority prio;
 		void* data;
 	};
 
-	void RunTask(const task_decl& task, atomic_counter * const cnt);
-	void RunTasks(task_decl* task, const size_t & size, atomic_counter * const cnt);
+	void RunTask(const task_decl& task, atomic_counter ** const cnt);
+	void RunTasks(task_decl* task, const size_t & size, atomic_counter ** const cnt);
 	void WaitForCounter(atomic_counter* const cnt, const uint32_t& tg);
 
 	namespace task_scheduling
